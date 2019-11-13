@@ -34,11 +34,6 @@ $('#form_register').submit(function(e){
 	    $.post("/aluno-cadastro",jsonString,'json');
 	    fechaPopupCadastro(event);
     }
-    else
-    {
-    	alert("O cadastro só pode ser realizado com seu e-mail institucional");
-    
-    }
 });
 
 
