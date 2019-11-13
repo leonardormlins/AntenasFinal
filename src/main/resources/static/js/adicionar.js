@@ -31,7 +31,7 @@ $(document).ready(function () {
 
 		$.post("/add-projeto", jsonSend, function (data) {
 			if(data!="false") {
-				alert("Adicionado projeto " + codigoProjeto + " com sucesso!");
+				document.getElementById("erro-add").style.display = "none";
 				window.location.href = 'principal.html';
 			}
 			else document.getElementById("erro-add").style.display = "block";
