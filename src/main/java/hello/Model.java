@@ -60,13 +60,13 @@ public class Model {
 		return found;
 	}
 	
-	public Document atribuir(String emailAluno, String _id) {
+	public Document atribuir(String emailAluno, String chave) {
 		MongoDatabase db = fongo.getDatabase("app");
 		MongoCollection<Document> projects = db.getCollection("projeto");
-		Document found = projects.find(new Document("_id", _id)).first();
+		Document found = projects.find(new Document("chave", chave)).first();
 		if(found!=null) {
-			BasicDBObject searchQuery = new BasicDBObject().append("_id", _id);
-			found.put("responsavel-aluno", emailAluno);
+			BasicDBObject searchQuery = new BasicDBObject().append("chave", chave);
+			found.put("alunos", emailAluno);
 			projects.replaceOne(searchQuery, found);
 			return found;
 		}
@@ -121,7 +121,6 @@ public class Model {
 		MongoCollection<Document> projetos = db.getCollection("projeto");
 		Document found = projetos.find(new Document("_id", id)).first();
 		BasicDBObject searchQuery = new BasicDBObject().append("_id", id);
-		projeto.put("fase", 6);
 		projeto.put("descricao-breve", desc);
 		projeto.put("link-externo-1", link);
 		System.out.println(projeto);

@@ -54,10 +54,10 @@ public class REST {
 			response.header("Access-Control-Allow-Origin", "*");
 			JSONObject json = new JSONObject(request.body());
 			String email = json.getString("email");
-			String id = json.getString("id");
+			String chave = json.getString("chave");
 			
 			try {
-				Document retorno = model.atribuir(email, id);
+				Document retorno = model.atribuir(email, chave);
 				if(retorno!=null) return retorno;
 				else return false;
 
