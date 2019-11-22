@@ -71,6 +71,9 @@
         <div id="erro-add" style="display: none">
           <span style="color: red">Projeto não existe!!</span>
         </div>
+        <div id="erro-add-already" style="display: none">
+          <span style="color: red">Você já está neste projeto!!</span>
+        </div>
         <button id="botao-add">Adicionar</button>
       </div>
     </div>
@@ -95,13 +98,13 @@
         <br>
 
         <label for="link-cadastro"><b>Link Repositório</b></label>
-        <input type="text" id="Link-cadastro" required>
+        <input type="text" id="link-repositorio" required>
 
         <label for="link-cadastro"><b>Link Cloud</b></label>
-        <input type="text" id="Link-cadastro" required>
+        <input type="text" id="link-cloud" required>
 
         <label for="desc-cadastro"><b>Comentário</b></label>
-        <input type="text" id="desc-cadastro" required>
+        <input type="text" id="comentario" required>
 
         <button type="button" onclick="entregar()">Entregar</button>
       </div>

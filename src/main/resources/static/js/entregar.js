@@ -17,17 +17,29 @@ function excluir(data) {
 }
 function entregar() {
 
+    id = "12345" //descobrir como pegar um id da table
     emails.push(sessionStorage.getItem("sess_email_aluno"));
     const usuario = sessionStorage.getItem("sess_email_aluno");
-    descricao = document.getElementById("desc-cadastro").value;
-    link = document.getElementById("Link-cadastro").value;
+    comentario = document.getElementById("comentario").value;
+    linkRep = document.getElementById("link-repositorio").value;
+    linkCloud = document.getElementById("link-cloud").value;
     const callbackSubmit = (data) => {
         //todo
     };
     $.post("entregar",
         JSON.stringify(
-            { "id": "1234", "autores": usuario, "descricao": descricao, "link": link }),
+            { "_id": id, 
+              "entregas": [
+                {
+                    "aluno-responsavel": usuario,
+                    "alunos": emails,
+                    "comentario": comentario,
+                    "link-cloud": linkCloud,
+                    "link-repositorio": linkRep
+                }
+              ]
+            },
         callbackSubmit,
-        'json');
+        'json'));
     window.location.href = 'principal.html';
 }

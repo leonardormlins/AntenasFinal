@@ -31,11 +31,9 @@ public class REST {
 			public Object handle(Request request, Response response) throws Exception {
 				response.header("Access-Control_Allow-Origin", "*");
 
-				JSONObject json = new JSONObject(request.body());
-				String email = json.getString("email");
-				String senha = json.getString("senha");
+				Document json = Document.parse(request.body());
 				try {
-					Document aluno = model.login(email, senha);
+					Document aluno = model.login(json);
 					if(aluno==null) {
 						return false;
 					}
@@ -52,15 +50,14 @@ public class REST {
 		post("/add-projeto", (Request request, Response response) -> {
 			
 			response.header("Access-Control-Allow-Origin", "*");
-			JSONObject json = new JSONObject(request.body());
-			String email = json.getString("email");
-			String chave = json.getString("chave");
+			Document json = Document.parse(request.body());
+			System.out.println("test-4");
 			
 			try {
-				Document retorno = model.atribuir(email, chave);
+				Document retorno = model.updateProjeto(json);
 				if(retorno!=null) return retorno;
 				else return false;
-
+				
 			} catch (NullPointerException e) {
 				return null;
 			}
@@ -97,7 +94,11 @@ public class REST {
 		get("/search", (request, response) -> {
 			return model.search(request.queryParams("chave"), request.queryParams("valor"));
 		});
-
+		
+		get("/search/:chave", (request, response) -> {
+			return model.buscaPorChave(request.params(":chave"));
+		});
+		
 		get("/dono/:email", (request, response) -> {
 			String ret = model.buscaPorDono(request.params(":email"));
 			return ret;
@@ -112,7 +113,7 @@ public class REST {
 		});
 		
 		get("/put", (request, response) -> {
-			return model.atribuir(request.queryParams("emailAluno"), request.queryParams("_id"));
+			return model.atribuir(Document.parse(request.body()));
 		});
 
 	}
