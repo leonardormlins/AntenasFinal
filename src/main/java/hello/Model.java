@@ -40,17 +40,6 @@ public class Model {
 		return foundJson;
 	}
 
-	public String buscaPorChave(String chave) {
-
-		MongoDatabase db = fongo.getDatabase("app");
-		MongoCollection<Document> projects = db.getCollection("projeto");
-		FindIterable<Document> found = projects.find(new Document("chave", chave));
-		String foundJson = StreamSupport.stream(found.spliterator(), false).map(Document::toJson)
-				.collect(Collectors.joining(", ", "[", "]"));
-		//System.out.println(foundJson);
-		return foundJson;
-	}
-	
 	public String buscaSemDono() {
 		MongoDatabase db = fongo.getDatabase("app");
 		MongoCollection<Document> projects = db.getCollection("projeto");
@@ -71,13 +60,13 @@ public class Model {
 		return found;
 	}
 	
-	public Document atribuir(Document aluno) {
+	public Document atribuir(String emailAluno, String _id) {
 		MongoDatabase db = fongo.getDatabase("app");
 		MongoCollection<Document> projects = db.getCollection("projeto");
-		Document found = projects.find(new Document("chave", aluno.get("chave"))).first();
+		Document found = projects.find(new Document("_id", _id)).first();
 		if(found!=null) {
-			BasicDBObject searchQuery = new BasicDBObject().append("chave", aluno.get("chave"));
-			found.put("alunos", aluno.get("alunos"));
+			BasicDBObject searchQuery = new BasicDBObject().append("_id", _id);
+			found.put("responsavel-aluno", emailAluno);
 			projects.replaceOne(searchQuery, found);
 			return found;
 		}
@@ -103,13 +92,31 @@ public class Model {
 		projeto.insertOne(doc);
 	}
 
-	public Document login(Document aluno) {
+	public Document login(String email, String senha) {
 		MongoDatabase db = fongo.getDatabase("app");
 		MongoCollection<Document> alunos = db.getCollection("alunos");
-		Document found = alunos.find(new Document("email", aluno.get("email")).append("senha", aluno.get("senha"))).first();
+		Document found = alunos.find(new Document("email", email).append("senha", senha)).first();
 
 		return found;
 	}
+	
+	public Document updateAluno(Document aluno) {
+		MongoDatabase db = fongo.getDatabase("app");
+		MongoCollection<Document> alunos = db.getCollection("alunos");
+		BasicDBObject query = new BasicDBObject();
+		query.append("_id", aluno.get("_id"));
+		Bson newDocument = new Document("$set", aluno);
+		return alunos.findOneAndUpdate(query, newDocument, (new FindOneAndUpdateOptions()).upsert(true));
+	}
+	
+	
+	public Document procurarEmail(String email) {
+		MongoDatabase db = fongo.getDatabase("app");
+		MongoCollection<Document> alunos = db.getCollection("alunos");
+    	Document found = alunos.find(new Document("email", email)).first();
+    	return found;
+    }
+	
 
 	public FindIterable<Document> listaProjetos() {
 		MongoDatabase db = fongo.getDatabase("app");
@@ -136,6 +143,7 @@ public class Model {
 		MongoCollection<Document> projetos = db.getCollection("projeto");
 		Document found = projetos.find(new Document("_id", id)).first();
 		BasicDBObject searchQuery = new BasicDBObject().append("_id", id);
+		projeto.put("fase", 6);
 		projeto.put("descricao-breve", desc);
 		projeto.put("link-externo-1", link);
 		System.out.println(projeto);
@@ -154,11 +162,13 @@ public class Model {
 		return listAlunos;
 	}
 
-	public void alterarId(String id, Document alteracao){
+	public void alterarId (String id, Document alteracao){
 		Document filter = new Document("id", id);
 		MongoDatabase db = fongo.getDatabase("app");
 		MongoCollection<Document> alunos = db.getCollection("alunos");
 		alunos.updateOne(filter, alteracao);
 		}
+	
+	
 
 }

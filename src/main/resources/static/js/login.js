@@ -1,22 +1,64 @@
+//LOGIN NOVO, COM TOKEN
 $(document).ready(function() {
-    /* Validar se usuario não fez logout */
-    var session_login = sessionStorage.getItem("sess_email_aluno");
-    if(session_login != null){
-				
-        //window.location.href = 'principal.html';
 
-    }
-    var cadastro = document.getElementById('cadastro');
+    var login = document.getElementById('login'); //label de id login
+    var cadastro = document.getElementById('cadastro'); //label de id cadastro
+
     window.onclick = function(event) {
+        if (event.target == login) {
+            login.style.display = "none";
+        }
+
         if (event.target == cadastro) {
             cadastro.style.display = "none";
         }
     }
+
+
 });
 
-$('#form_register').submit(function(e){  
+
+var logando = false;
+$('[data-login-form]').on('submit', function(event){  
+    event.preventDefault();
+
+    if(logando) return;
+    logando = true;
+
+    var btnEntrar = document.querySelector('#entrar');
+    btnEntrar.innerText = 'Entrando...';
+    btnEntrar.setAttribute('disabled', '');
+
+    var email = event.currentTarget.querySelector('#email-login').value.trim();
+    var senha = event.currentTarget.querySelector('#senha-login').value.trim();
+
+    var dados = {
+        email: email,
+        senha: senha
+    };
+
+    $.post("/aluno", JSON.stringify(dados) , 'json')
+        .done(function(token){
+            localStorage.setItem('token', token);
+            sessionStorage.setItem("sess_email_aluno", dados.email);
+            location.replace('/principal.html');
+        })
+        .fail(function() {
+            logando = false;
+            alert('Login ou senha invalidos');
+            btnEntrar.innerText = 'Entrar';
+            btnEntrar.removeAttribute('disabled');
+        });
+});
+
+
+var cadastrando = false;
+
+$('#form_cadastro').submit(function(e){  
     e.preventDefault();
-  
+    
+    if (cadastrando) return;
+    cadastrando = true;
     json = {
     		nome: $("#nome-cadastro").val(),
 	        email: $("#email-cadastro").val(),
@@ -29,10 +71,19 @@ $('#form_register').submit(function(e){
     
     email= $("#email-cadastro").val();
     let retornoValidacao = validaEmail(email);
-    if(retornoValidacao==true)
+    if(retornoValidacao)
 	{
-	    $.post("/aluno-cadastro",jsonString,'json');
+	    $.post("/aluno-cadastro",JSON.stringify(json),'json')
+	    .done(function(){
+            alert('Te enviamos um email com um link, acesse-o para ativar sua conta.');
+            location.reload();
+        });
 	    fechaPopupCadastro(event);
+    }
+    else
+    {
+    	alert("O cadastro só pode ser realizado com seu e-mail institucional");
+    
     }
 });
 
@@ -54,27 +105,15 @@ function validaEmail(email) {
 }
 
 
+function abrePopupLogin(event) {
+    event.preventDefault();
+    document.getElementById('login').style.display='block';    
+}
 
-
-$('#form_login').submit(function(e){    
-				
-    e.preventDefault();
-    
-    var userName = $('#email-login').val().trim();
-    var password = $('#senha-login').val().trim();
-    
-    $.post("/aluno", JSON.stringify({'email': userName, 'senha': password}), function(data){
-            
-        if(data.nivel){
-            window.location.href = 'principal.html';
-            sessionStorage.setItem("sess_email_aluno",data.email);
-        } else {
-            document.getElementById("erro-login").style.display = "block";
-        }
-            
-    }, "json");
-    
-});
+function fechaPopupLogin(event) {
+    event.preventDefault();
+    document.getElementById('login').style.display='none';    
+}
 
 
 function abrePopupCadastro(event) {
@@ -86,3 +125,18 @@ function fechaPopupCadastro(event) {
     event.preventDefault();
     document.getElementById('cadastro').style.display='none';    
 }
+
+
+//botão para fazer logout
+$('#sair').click(function(e){
+
+    e.preventDefault();
+
+    localStorage.removeItem('token');
+    sessionStorage.setItem("sess_email_aluno", '');
+    location.replace('/');
+})
+
+
+
+

@@ -9,6 +9,7 @@ $(document).ready(function () {
 	let retorno = {}
 
 	$.get(rota, function (projetosBE, err) {
+		
 		let projects = JSON.parse(projetosBE);
 		let wichParticipate = [];
 		for (i = 0; i < projects.length; i++) {
